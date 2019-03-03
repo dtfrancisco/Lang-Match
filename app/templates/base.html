@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>{% block title %}{% endblock title %} | LangMatch</title>
+    </head>
+    <body>
+        <div><a href="{{ url_for('browse') }}">Browse Matches</a>
+        <span>Forum</span>
+        <a href="{{ url_for('login') }}"">Login</a>
+        <span>Messages</span>
+        <span>Profile</span>
+        </div>
+        <hr>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}
+        {% endblock content %}
+    </body>
+</html>
