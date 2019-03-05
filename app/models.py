@@ -6,9 +6,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
+    username = db.Column(db.String(40), index=True, unique=True)
+    email = db.Column(db.String(80), index=True, unique=True)
+    password_hash = db.Column(db.String(40))
     answers = db.relationship('Answer', backref='author', lazy='dynamic')
 
     def set_password(self, password):
