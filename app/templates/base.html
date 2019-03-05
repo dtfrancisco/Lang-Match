@@ -1,11 +1,15 @@
 <html>
     <head>
-        <title>{% block title %}{% endblock title %} | LangMatch</title>
+        <title>{{ title }} | LangMatch</title>
     </head>
     <body>
         <div><a href="{{ url_for('browse') }}">Browse Matches</a>
         <span>Forum</span>
-        <a href="{{ url_for('login') }}"">Login</a>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}"">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}"">Login</a>
+        {% endif %}
         <span>Messages</span>
         <span>Profile</span>
         </div>

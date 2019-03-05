@@ -1,11 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}Browse{% endblock %}
-
 {% block content %}
-    {% if user %}
-        <h1>Hi, {{user}}!</h1>
-    {% else %}
-        <h1>Hi!</h1>
-    {% endif %}
+    <h1>Hi {{ current_user.username }}</h1>
 {% endblock content %}

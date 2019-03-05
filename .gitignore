@@ -1,5 +1,11 @@
 # Packages
 __pycache__
 
+#Files
+random_test.py
+
+#Virtual environments
 venv
+
+#Databases
 app.db
