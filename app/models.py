@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from app import db, login
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from PIL import Image
 
 
 class User(UserMixin, db.Model):
@@ -17,10 +18,18 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def avatar(self, size):
+        # img = Image.open("http://www.blankinshippt.com/images/icons/blank-person.jpg")
+        # new_width, new_height = size, size
+        # img = img.resize((new_width, new_height), Image.ANTIALIAS)
+        return 'http://www.blankinshippt.com/images/icons/blank-person.jpg'
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
 # Load a user from the database given an id
+
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))

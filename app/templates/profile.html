@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <table>
+        <tr valign="top">
+            <td>{{ user.username }}</td>
+        </tr>
+    </table>
+
+    {% for idx in range(questions|length) %}
+        {{ questions[idx].body }}
+        <br>
+        {% if user == current_user %}
+            <a href="{{ url_for('answer', username=current_user.username, id=idx+1) }} ">Answer</a>
+        {% else %}
+            Display Answer
+        {% endif %}
+        <hr>
+    {% endfor %}
+{% endblock content %}

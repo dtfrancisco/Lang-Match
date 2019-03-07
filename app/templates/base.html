@@ -5,13 +5,14 @@
     <body>
         <div><a href="{{ url_for('browse') }}">Browse Matches</a>
         <span>Forum</span>
-        {% if current_user.is_authenticated %}
-            <a href="{{ url_for('logout') }}"">Logout</a>
-        {% else %}
-            <a href="{{ url_for('login') }}"">Login</a>
-        {% endif %}
         <span>Messages</span>
-        <span>Profile</span>
+        <a href="{{ url_for('user_profile') }}">Profile</a>
+        <span>Settings</span>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
         </div>
         <hr>
         {% with messages = get_flashed_messages(with_categories=true) %}

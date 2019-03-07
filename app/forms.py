@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from app.models import User
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import InputRequired, Email, EqualTo, Length, ValidationError
 
 
@@ -27,3 +27,9 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('An account with this email address already exists!')
+
+
+class AnswerForm(FlaskForm):
+    question_id = None #Set in answer.html
+    body = TextAreaField('', validators=[Length(min=0, max=500)])
+    submit = SubmitField('Submit')

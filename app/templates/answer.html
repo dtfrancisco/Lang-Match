@@ -1,0 +1,15 @@
+{{ question.body }}
+
+<!-- Action attribute: Empty because form is submitted to same url that rendered the form, novalidate- have Flask route handle form validation not the web browser -->
+<form action="" method="post" novalidate>
+    <!-- Generate hidden field token to protect against CSRF attacks. SECRET_KEY defined in config.py -->
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.body.label }}<br>
+        {{ form.body(cols=50, rows=10) }}
+        {% for error in form.body.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>

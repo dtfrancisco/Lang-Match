@@ -1,19 +1,21 @@
 from flask import render_template, url_for, flash, redirect, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
-from app.models import User
+from app.forms import LoginForm, RegistrationForm, AnswerForm
+from app.models import User, Question, Answer
 from werkzeug.urls import url_parse
 
 
 @app.route('/')
 @app.route('/browse')
+@app.route('/browse/')
 @login_required
 def browse():
     return render_template('browse.html', title='Browse')
 
 
 @app.route('/login', methods=['GET', 'POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('browse'))
@@ -33,12 +35,14 @@ def login():
 
 
 @app.route('/logout')
+@app.route('/logout/')
 def logout():
     logout_user()
     return redirect(url_for('browse'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
+@app.route('/register/', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('browse'))
@@ -51,3 +55,47 @@ def register():
         flash(f'Thanks for registering!')
         return redirect(url_for('login'))
     return render_template('register.html', form=form, title='Register')
+
+
+@app.route('/profile')
+@app.route('/profile/')
+@login_required
+def user_profile():
+    return redirect(url_for('profile', username=current_user.username))
+
+
+@app.route('/profile/<username>', methods=['GET', 'POST'])
+@app.route('/profile/<username>/', methods=['GET', 'POST'])
+def profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    questions = Question.query.filter_by(type='summary').all()
+    return render_template('profile.html', user=user, questions=questions)
+
+
+@app.route('/answer/<username>/<id>', methods=['GET', 'POST'])
+@app.route('/answer/<username>/<id>/', methods=['GET', 'POST'])
+@login_required
+def answer(username, id):
+    # Figure out if answer already exists
+    question = Question.query.get(int(id))
+    answer = Answer.query.filter_by(author=current_user).filter_by(question=question).first()
+
+    form = AnswerForm()
+    # If answer doesn't yet exist
+    if answer is None:
+        if form.validate_on_submit():
+            answer = Answer(body=form.body.data, author=current_user, question=question)
+            db.session.add(answer)
+            db.session.commit()
+            flash(f'Your response has been recorded')
+            return redirect(url_for('profile', username=current_user.username))
+    elif request.method == 'GET':
+        if answer:
+            form.body.data = answer.body
+    # Validate existing form
+    elif form.validate_on_submit():
+        answer.body = form.body.data
+        db.session.commit()
+        flash(f'Your response has been edited')
+        return redirect(url_for('profile', username=current_user.username))
+    return render_template('answer.html', form=form, author=current_user, question=question)
