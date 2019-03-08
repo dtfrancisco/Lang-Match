@@ -8,12 +8,17 @@
     </table>
 
     {% for idx in range(questions|length) %}
-        {{ questions[idx].body }}
-        <br>
+        <h2>{{ questions[idx].body }}</h2>
+        {% set answer = Answer.query.filter_by(author=user).filter_by(question=questions[idx]).first() %}
+        <p>{{ answer.body }}</p>
         {% if user == current_user %}
-            <a href="{{ url_for('answer', username=current_user.username, id=idx+1) }} ">Answer</a>
-        {% else %}
-            Display Answer
+            <p>
+                {% if answer %}
+                    <a href="{{ url_for('answer', username=current_user.username, id=idx+1) }} ">Re-Answer</a>
+                {% else %}
+                    <a href="{{ url_for('answer', username=current_user.username, id=idx+1) }} ">Answer</a>
+                {% endif %}
+            </p>
         {% endif %}
         <hr>
     {% endfor %}

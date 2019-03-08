@@ -30,6 +30,5 @@ class RegistrationForm(FlaskForm):
 
 
 class AnswerForm(FlaskForm):
-    question_id = None #Set in answer.html
     body = TextAreaField('', validators=[Length(min=0, max=500)])
     submit = SubmitField('Submit')

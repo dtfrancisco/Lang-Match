@@ -69,7 +69,7 @@ def user_profile():
 def profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     questions = Question.query.filter_by(type='summary').all()
-    return render_template('profile.html', user=user, questions=questions)
+    return render_template('profile.html', user=user, questions=questions, Answer=Answer)
 
 
 @app.route('/answer/<username>/<id>', methods=['GET', 'POST'])
@@ -90,12 +90,11 @@ def answer(username, id):
             flash(f'Your response has been recorded')
             return redirect(url_for('profile', username=current_user.username))
     elif request.method == 'GET':
-        if answer:
-            form.body.data = answer.body
-    # Validate existing form
+        form.body.data = answer.body
+    # Validate an existing answer
     elif form.validate_on_submit():
         answer.body = form.body.data
         db.session.commit()
         flash(f'Your response has been edited')
         return redirect(url_for('profile', username=current_user.username))
-    return render_template('answer.html', form=form, author=current_user, question=question)
+    return render_template('answer.html', form=form, question=question)

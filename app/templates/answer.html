@@ -1,4 +1,5 @@
-{{ question.body }}
+<a href="{{ url_for('profile', username=current_user.username)}}">Return to profile</a>
+<h2>{{ question.body }}</h2>
 
 <!-- Action attribute: Empty because form is submitted to same url that rendered the form, novalidate- have Flask route handle form validation not the web browser -->
 <form action="" method="post" novalidate>
