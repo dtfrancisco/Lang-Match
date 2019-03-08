@@ -4,6 +4,7 @@
     <table>
         <tr valign="top">
             <td>{{ user.username }}</td>
+            <td>{{ user.avatar(128) }}</td>
         </tr>
     </table>
 
@@ -14,9 +15,9 @@
         {% if user == current_user %}
             <p>
                 {% if answer %}
-                    <a href="{{ url_for('answer', username=current_user.username, id=idx+1) }} ">Re-Answer</a>
+                    <a href="{{ url_for('answer', id=idx+1) }} ">Re-Answer</a>
                 {% else %}
-                    <a href="{{ url_for('answer', username=current_user.username, id=idx+1) }} ">Answer</a>
+                    <a href="{{ url_for('answer', id=idx+1) }} ">Answer</a>
                 {% endif %}
             </p>
         {% endif %}

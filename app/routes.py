@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, AnswerForm
+from app.forms import LoginForm, RegistrationForm, AnswerForm, SettingsForm
 from app.models import User, Question, Answer
 from werkzeug.urls import url_parse
 
@@ -69,13 +69,13 @@ def user_profile():
 def profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     questions = Question.query.filter_by(type='summary').all()
-    return render_template('profile.html', user=user, questions=questions, Answer=Answer)
+    return render_template('profile.html', user=user, questions=questions, Answer=Answer, title=user)
 
 
-@app.route('/answer/<username>/<id>', methods=['GET', 'POST'])
-@app.route('/answer/<username>/<id>/', methods=['GET', 'POST'])
+@app.route('/answer/<id>', methods=['GET', 'POST'])
+@app.route('/answer/<id>/', methods=['GET', 'POST'])
 @login_required
-def answer(username, id):
+def answer(id):
     # Figure out if answer already exists
     question = Question.query.get(int(id))
     answer = Answer.query.filter_by(author=current_user).filter_by(question=question).first()
@@ -97,4 +97,31 @@ def answer(username, id):
         db.session.commit()
         flash(f'Your response has been edited')
         return redirect(url_for('profile', username=current_user.username))
-    return render_template('answer.html', form=form, question=question)
+    return render_template('answer.html', form=form, question=question, title='Answer')
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+@app.route('/settings/', methods=['GET', 'POST'])
+@login_required
+def settings():
+    form = SettingsForm()
+    if request.method == 'GET':
+        form.email.data = current_user.email
+        form.username.data = current_user.username
+        form.gender.data = current_user.gender
+        form.birthday.data = current_user.birthday
+        form.city.data = current_user.city
+        form.state.data = current_user.state
+        form.zip_code.data = current_user.zip_code
+    elif form.validate_on_submit():
+        current_user.email = form.email.data
+        current_user.username = form.username.data
+        current_user.gender = form.gender.data
+        current_user.birthday = form.birthday.data
+        current_user.city = form.city.data
+        current_user.state = form.state.data
+        current_user.zip_code = form.zip_code.data
+        db.session.commit()
+        flash(f'Your settings have been updated')
+        return redirect(url_for('profile', username=current_user.username))
+    return render_template('settings.html', form=form, title='Settings')
