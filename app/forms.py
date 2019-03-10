@@ -20,15 +20,15 @@ class RegistrationForm(FlaskForm):
     conf_password = PasswordField('Confirm Password', validators=[InputRequired()])
     submit = SubmitField('Register')
 
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if user is not None:
-            raise ValidationError('Username has already been taken')
-
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('An account with this email address already exists!')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None:
+            raise ValidationError('Username has already been taken by another user')
 
 
 class AnswerForm(FlaskForm):
@@ -44,7 +44,25 @@ class SettingsForm(FlaskForm):
     city = StringField('City', validators=[Length(max=50, message='City cannot exceed 50 characters')])
     state = StringField('State', validators=[Length(max=30, message='State cannot exceed 30 characters')])
     zip_code = StringField('Zip code')
+    privacy = SelectField('Privacy settings', choices=[('1', 'None'), ('2', 'Only registered users'), ('3', 'Hide all information from profile (but appear in searches)'), ('4', 'Hide all information from profile (and in searches)')])
     submit = SubmitField('Submit')
+
+    def __init__(self, original_email, original_username, *args, **kwargs):
+        super(SettingsForm, self).__init__(*args, **kwargs)
+        self.original_email = original_email
+        self.original_username = original_username
+
+    def validate_email(self, email):
+        if email.data != self.original_email:
+            user = User.query.filter_by(email=self.email.data).first()
+            if user is not None:
+                raise ValidationError('An account with this email address already exists!')
+
+    def validate_username(self, username):
+        if username.data != self.original_username:
+            user = User.query.filter_by(username=self.username.data).first()
+            if user is not None:
+                raise ValidationError('Username has already been taken by another user')
 
     def validate_zipcode(self, zip_code):
         if len(zip_code != 0 or zip_code != 5):

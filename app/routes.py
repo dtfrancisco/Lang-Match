@@ -4,6 +4,14 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm, AnswerForm, SettingsForm
 from app.models import User, Question, Answer
 from werkzeug.urls import url_parse
+from datetime import datetime
+
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
 
 
 @app.route('/')
@@ -26,10 +34,14 @@ def login():
             flash(f'Invalid username or password')
             return redirect(url_for('browse'))
         login_user(user, remember=form.remember_me.data)
+
         next_page = request.args.get('next')
-        # Set next_page to browse if not set and also set it to browse in case external website is provided
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('browse')
+        if current_user.last_seen:
+            # Set next_page to browse if not set and also set it to browse in case external website is provided
+            if not next_page or url_parse(next_page).netloc != '':
+                next_page = url_for('browse')
+        else:
+            next_page = url_for('user_preferences')
         return redirect(next_page)
     return render_template('login.html', form=form, title='Login')
 
@@ -69,7 +81,7 @@ def user_profile():
 def profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     questions = Question.query.filter_by(type='summary').all()
-    return render_template('profile.html', user=user, questions=questions, Answer=Answer, title=user)
+    return render_template('profile.html', user=user, questions=questions, Answer=Answer, title=user.username)
 
 
 @app.route('/answer/<id>', methods=['GET', 'POST'])
@@ -100,11 +112,25 @@ def answer(id):
     return render_template('answer.html', form=form, question=question, title='Answer')
 
 
-@app.route('/settings', methods=['GET', 'POST'])
-@app.route('/settings/', methods=['GET', 'POST'])
+@app.route('/settings')
+@app.route('/settings/')
 @login_required
-def settings():
-    form = SettingsForm()
+def settings_menu():
+    return render_template('settings_menu.html', title='Settings')
+
+
+@app.route('/preferences', methods=['GET', 'POST'])
+@app.route('/preferences/', methods=['GET', 'POST'])
+@login_required
+def user_preferences():
+    return render_template('user_preferences.html', title='Preferences')
+
+
+@app.route('/user_settings', methods=['GET', 'POST'])
+@app.route('/user_settings/', methods=['GET', 'POST'])
+@login_required
+def user_settings():
+    form = SettingsForm(current_user.email, current_user.username)
     if request.method == 'GET':
         form.email.data = current_user.email
         form.username.data = current_user.username
@@ -113,6 +139,7 @@ def settings():
         form.city.data = current_user.city
         form.state.data = current_user.state
         form.zip_code.data = current_user.zip_code
+        form.privacy.data = current_user.privacy
     elif form.validate_on_submit():
         current_user.email = form.email.data
         current_user.username = form.username.data
@@ -121,7 +148,8 @@ def settings():
         current_user.city = form.city.data
         current_user.state = form.state.data
         current_user.zip_code = form.zip_code.data
+        current_user.privacy = form.privacy.data
         db.session.commit()
         flash(f'Your settings have been updated')
-        return redirect(url_for('profile', username=current_user.username))
-    return render_template('settings.html', form=form, title='Settings')
+        return redirect(url_for('user_settings'))
+    return render_template('user_settings.html', form=form, title='User Settings')

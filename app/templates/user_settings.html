@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Update Settings</h1>
+    <h1>Update User Settings</h1>
     <!-- Action attribute: Empty because form is submitted to same url that rendered the form,
          novalidate- have Flask route handle form validation not the web browser -->
     <form action="" method="post" novalidate>
@@ -50,6 +50,9 @@
             {% for error in form.zip_code.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
+        </p>
+        <p>
+            {{ form.privacy.label }} {{ form.privacy }}
         </p>
         <p>{{ form.submit() }}</p>
     </form>
