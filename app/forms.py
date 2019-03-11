@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from app.models import User
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, SelectMultipleField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import InputRequired, Email, EqualTo, Length, ValidationError
 import re
@@ -36,7 +36,20 @@ class AnswerForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
-class SettingsForm(FlaskForm):
+class UserPreferencesForm(FlaskForm):
+    other_fields = {}
+    english = SelectMultipleField('English', choices=[('sp', 'Fluent speaker'), ('st', 'Student'), ('t', 'Teacher'), ('o', 'Other')])
+    english_body = TextAreaField('', validators=[Length(min=0, max=200)])
+    french = SelectMultipleField('French', choices=[('sp', 'Fluent speaker'), ('st', 'Student'), ('t', 'Teacher'), ('o', 'Other')])
+    french_body = TextAreaField('', validators=[Length(min=0, max=200)])
+    german = SelectMultipleField('German', choices=[('sp', 'Fluent speaker'), ('st', 'Student'), ('t', 'Teacher'), ('o', 'Other')])
+    german_body = TextAreaField('', validators=[Length(min=0, max=200)])
+    spanish = SelectMultipleField('Spanish', choices=[('sp', 'Fluent speaker'), ('st', 'Student'), ('t', 'Teacher'), ('o', 'Other')])
+    spanish_body = TextAreaField('', validators=[Length(min=0, max=200)])
+    submit = SubmitField('Submit')
+
+
+class UserSettingsForm(FlaskForm):
     email = StringField('Email', validators=[InputRequired(), Email(), Length(max=80, message='Email address cannot exceed 80 characters')])
     username = StringField('Username', validators=[InputRequired(), Length(max=40, message='Username cannot exceed 40 characters')])
     gender = SelectField('Gender', choices=[('m', 'Male'), ('f', 'Female'), ('o', 'Other')])
@@ -48,7 +61,7 @@ class SettingsForm(FlaskForm):
     submit = SubmitField('Submit')
 
     def __init__(self, original_email, original_username, *args, **kwargs):
-        super(SettingsForm, self).__init__(*args, **kwargs)
+        super(UserSettingsForm, self).__init__(*args, **kwargs)
         self.original_email = original_email
         self.original_username = original_username
 

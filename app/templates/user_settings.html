@@ -22,10 +22,10 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.gender.label }} {{ form.gender }}
+            {{ form.gender.label }} <br> {{ form.gender }}
         </p>
         <p>
-            {{ form.birthday.label }} {{ form.birthday }}
+            {{ form.birthday.label }} <br> {{ form.birthday }}
             {% for error in form.birthday.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}

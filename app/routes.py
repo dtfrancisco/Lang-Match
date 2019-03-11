@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, AnswerForm, SettingsForm
+from app.forms import LoginForm, RegistrationForm, AnswerForm, UserPreferencesForm, UserSettingsForm
 from app.models import User, Question, Answer
 from werkzeug.urls import url_parse
 from datetime import datetime
@@ -90,7 +90,7 @@ def profile(username):
 def answer(id):
     # Figure out if answer already exists
     question = Question.query.get(int(id))
-    answer = Answer.query.filter_by(author=current_user).filter_by(question=question).first()
+    answer = Answer.query.filter_by(question=question).first()
 
     form = AnswerForm()
     # If answer doesn't yet exist
@@ -123,14 +123,17 @@ def settings_menu():
 @app.route('/preferences/', methods=['GET', 'POST'])
 @login_required
 def user_preferences():
-    return render_template('user_preferences.html', title='Preferences')
+    form = UserPreferencesForm()
+    questions = Question.query.filter_by(type='Basic').all()
+    #TODO- Test preferences and finish UserPreferencesForm validation
+    return render_template('user_preferences.html', form=form, title='Preferences')
 
 
 @app.route('/user_settings', methods=['GET', 'POST'])
 @app.route('/user_settings/', methods=['GET', 'POST'])
 @login_required
 def user_settings():
-    form = SettingsForm(current_user.email, current_user.username)
+    form = UserSettingsForm(current_user.email, current_user.username)
     if request.method == 'GET':
         form.email.data = current_user.email
         form.username.data = current_user.username
@@ -151,5 +154,5 @@ def user_settings():
         current_user.privacy = form.privacy.data
         db.session.commit()
         flash(f'Your settings have been updated')
-        return redirect(url_for('user_settings'))
+        return redirect(url_for('settings_menu'))
     return render_template('user_settings.html', form=form, title='User Settings')

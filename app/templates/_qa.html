@@ -1,0 +1,15 @@
+{% for idx in range(questions|length) %}
+    <h2>{{ questions[idx].body }}</h2>
+    {% set answer = Answer.query.filter_by(author=user).filter_by(question=questions[idx]).first() %}
+    <p>{{ answer.body }}</p>
+    {% if user == current_user %}
+        <p>
+            {% if answer %}
+                <a href="{{ url_for('answer', id=idx+1) }} ">Re-Answer</a>
+            {% else %}
+                <a href="{{ url_for('answer', id=idx+1) }} ">Answer</a>
+            {% endif %}
+        </p>
+    {% endif %}
+    <hr>
+{% endfor %}

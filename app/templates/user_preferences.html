@@ -2,4 +2,37 @@
 
 {% block content %}
     <h1>User Preferences</h1>
+    <form action="" method="post" novalidate>
+        <!-- Generate hidden field token to protect against CSRF attacks. SECRET_KEY defined in config.py -->
+        {{ form.hidden_tag() }}
+         <p>
+            {{ form.english.label }} <br> {{ form.english }}
+        </p>
+        <p>
+            Explain your answer
+            {{ form.english_body.label }} <br> {{ form.english_body(cols=40, rows=5) }}
+        </p>
+         <p>
+            {{ form.french.label }} <br> {{ form.french }}
+        </p>
+        <p>
+            Explain your answer
+            {{ form.french_body.label }} <br> {{ form.french_body(cols=40, rows=5) }}
+        </p>
+         <p>
+            {{ form.german.label }} <br> {{ form.german }}
+        </p>
+        <p>
+            Explain your answer
+            {{ form.german_body.label }} <br> {{ form.german_body(cols=40, rows=5) }}
+        </p>
+         <p>
+            {{ form.spanish.label }} <br> {{ form.spanish }}
+        </p>
+        <p>
+            Explain your answer
+            {{ form.spanish_body.label }} <br> {{ form.spanish_body(cols=40, rows=5) }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
 {% endblock content %}
